@@ -302,70 +302,168 @@
 // }
 
 
+// let allProducts = [];
+
+// const container = document.getElementById("product-container");
+// const loadBtn = document.getElementById("load-btn");
+// const backBtn = document.getElementById("back-btn");
+// const searchInput = document.getElementById("search");
+// const status = document.getElementById("status");
+
+// loadBtn.addEventListener("click", fetchProducts);
+// backBtn.addEventListener("click", () => displayProducts(allProducts));
+// searchInput.addEventListener("input", handleSearch);
+
+// async function fetchProducts() {
+//     status.innerText = "Loading products...";
+//     const res = await fetch("https://dummyjson.com/products");
+//     const data = await res.json();
+//     allProducts = data.products;
+//     displayProducts(allProducts);
+//     status.innerText = "";
+// }
+
+// function displayProducts(products) {
+//     container.innerHTML = "";
+
+//     if (products.length === 0) {
+//         status.innerText = "No products found.";
+//         return;
+//     }
+
+//     status.innerText = `${products.length} products shown`;
+
+//     products.forEach(product => {
+//         const card = document.createElement("div");
+//         card.className = "product-card";
+//         card.id = `product-${product.id}`;
+
+//         card.innerHTML = `
+//       <img src="${product.thumbnail}">
+//       <h3>${product.title}</h3>
+//       <p class="price">₹ ${product.price}</p>
+//       <p>${product.category}</p>
+//     `;
+
+//         card.addEventListener("click", () => {
+//             window.location.href = `#product-${product.id}`;
+//             showSingle(product.id);
+//         });
+
+//         container.appendChild(card);
+//     });
+// }
+
+// function showSingle(id) {
+//     const product = allProducts.find(p => p.id === id);
+//     displayProducts([product]);
+// }
+
+// function handleSearch() {
+//     const q = searchInput.value.toLowerCase();
+
+//     const filtered = allProducts.filter(p =>
+//         p.title.toLowerCase().includes(q) ||
+//         p.category.toLowerCase().includes(q)
+//     );
+
+//     displayProducts(filtered);
+// }
+
 let allProducts = [];
+let filteredProducts = [];
+let currentPage = 1;
+let itemsPerPage = 6;
 
 const container = document.getElementById("product-container");
-const loadBtn = document.getElementById("load-btn");
-const backBtn = document.getElementById("back-btn");
 const searchInput = document.getElementById("search");
 const status = document.getElementById("status");
+const loader = document.getElementById("loader");
+const pageText = document.getElementById("page");
 
-loadBtn.addEventListener("click", fetchProducts);
-backBtn.addEventListener("click", () => displayProducts(allProducts));
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+
 searchInput.addEventListener("input", handleSearch);
+prevBtn.addEventListener("click", prevPage);
+nextBtn.addEventListener("click", nextPage);
+
+fetchProducts();
 
 async function fetchProducts() {
-    status.innerText = "Loading products...";
-    const res = await fetch("https://dummyjson.com/products");
-    const data = await res.json();
-    allProducts = data.products;
-    displayProducts(allProducts);
-    status.innerText = "";
+    loader.classList.remove("hidden");
+
+    try {
+        const res = await fetch("https://dummyjson.com/products");
+        const data = await res.json();
+        allProducts = data.products;
+        filteredProducts = allProducts;
+        showPage();
+    } catch (err) {
+        status.innerText = "Failed to load products.";
+    } finally {
+        loader.classList.add("hidden");
+    }
 }
 
-function displayProducts(products) {
+function showPage() {
     container.innerHTML = "";
 
-    if (products.length === 0) {
+    let start = (currentPage - 1) * itemsPerPage;
+    let end = start + itemsPerPage;
+
+    let pageItems = filteredProducts.slice(start, end);
+    pageText.innerText = `Page ${currentPage}`;
+
+    let totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+
+    if (pageItems.length === 0) {
         status.innerText = "No products found.";
         return;
     }
 
-    status.innerText = `${products.length} products shown`;
+    status.innerText = "";
 
-    products.forEach(product => {
+    pageItems.forEach(product => {
         const card = document.createElement("div");
         card.className = "product-card";
-        card.id = `product-${product.id}`;
 
         card.innerHTML = `
-      <img src="${product.thumbnail}">
-      <h3>${product.title}</h3>
-      <p class="price">₹ ${product.price}</p>
-      <p>${product.category}</p>
-    `;
-
-        card.addEventListener("click", () => {
-            window.location.href = `#product-${product.id}`;
-            showSingle(product.id);
-        });
+            <img src="${product.thumbnail}">
+            <h3>${product.title}</h3>
+            <p class="price">₹ ${product.price}</p>
+            <p>${product.category}</p>
+        `;
 
         container.appendChild(card);
     });
 }
 
-function showSingle(id) {
-    const product = allProducts.find(p => p.id === id);
-    displayProducts([product]);
-}
-
 function handleSearch() {
     const q = searchInput.value.toLowerCase();
+    currentPage = 1;
 
-    const filtered = allProducts.filter(p =>
+    filteredProducts = allProducts.filter(p =>
         p.title.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q)
     );
 
-    displayProducts(filtered);
+    showPage();
+}
+
+function nextPage() {
+    let totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        showPage();
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        showPage();
+    }
 }

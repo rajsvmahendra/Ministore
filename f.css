@@ -1,40 +1,63 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: system-ui, sans-serif;
     background: #f4f6f8;
-    padding: 20px;
 }
 
-header {
-    text-align: center;
-}
-
-.controls {
+/* NAVBAR */
+.navbar {
     display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+    background: black;
+    padding: 12px 30px;
+    color: white;
 }
 
-input {
-    padding: 10px;
-    width: 250px;
+.logo {
+    font-size: 20px;
+    font-weight: bold;
 }
 
-button {
-    padding: 10px 15px;
-    cursor: pointer;
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
 }
 
-#status {
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.navbar input {
+    padding: 7px;
+    border-radius: 4px;
+    border: none;
+}
+
+/* HERO */
+.hero {
     text-align: center;
-    margin-bottom: 10px;
-    color: gray;
+    padding: 25px;
 }
 
+/* PRODUCTS */
 #product-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 15px;
+    padding: 20px;
 }
 
 .product-card {
@@ -43,7 +66,6 @@ button {
     border-radius: 8px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, .1);
     transition: 0.2s;
-    cursor: pointer;
 }
 
 .product-card:hover {
@@ -52,13 +74,8 @@ button {
 
 .product-card img {
     width: 100%;
-    height: 140px;
-    object-fit: cover;
-}
-
-.product-card h3 {
-    font-size: 16px;
-    margin: 8px 0;
+    height: auto;
+    object-fit: contain;
 }
 
 .price {
@@ -66,6 +83,54 @@ button {
     color: green;
 }
 
-html {
-    scroll-behavior: smooth;
+/* PAGINATION */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: white;
+}
+
+.pagination button {
+    padding: 8px 18px;
+    border: none;
+    background: black;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background: gray;
+    cursor: not-allowed;
+}
+
+#page {
+    font-weight: bold;
+    background: #f0f0f0;
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+/* LOADER */
+#loader {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ccc;
+    border-top: 4px solid black;
+    border-radius: 50%;
+    margin: 20px auto;
+    animation: spin 1s linear infinite;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
